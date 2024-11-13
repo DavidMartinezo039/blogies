@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
@@ -25,12 +26,22 @@ class DatabaseSeeder extends Seeder
             // No creamos comentarios para el usuario actual
         });
 
+        // No admin
+        $juan = User::factory()->create([
+            'name' => 'Juan',
+            'last_name' => 'Perez',
+            'email' => 'juan@example.com',
+            'password' => Hash::make('asdfasdf'),
+            'is_admin' => false,
+        ]);
+
         // Crear un usuario específico, "David"
         $david = User::factory()->create([
-            'name' => 'David',  // Nombre
-            'last_name' => 'Martinez',  // Apellido
-            'email' => '1234@gmail.com',  // Correo
-            'password' => Hash::make('asdfasdf'),  // Contraseña cifrada
+            'name' => 'David',
+            'last_name' => 'Martinez',
+            'email' => '1234@gmail.com',
+            'password' => Hash::make('asdfasdf'),
+            'is_admin' => true,
         ]);
 
         // Crear comentarios para todos los posts de todos los usuarios (con el usuario David como autor)
@@ -39,9 +50,13 @@ class DatabaseSeeder extends Seeder
             Comment::factory()->create([
                 'content' => 'Tu primer comentario',
                 'post_id' => $post->id,
-                'user_id' => $david->id, // Asignar el comentario al usuario David
+                'user_id' => $david->id,
             ]);
         });
+
+        // Crear 10 categorías con "David" como admin
+        Category::factory(10)->create();
+
         /*foreach ($users as $user) {
             $user->posts()->saveMany(
                 Post::factory(10)->make()
