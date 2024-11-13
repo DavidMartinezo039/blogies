@@ -106,7 +106,6 @@ class PostController extends Controller
         // Realiza la paginación
         $posts = $query->paginate(9);
 
-        // Obtener todas las categorías para el formulario
         $categories = Category::all();
 
         return view('posts.user', compact('posts', 'orderBy', 'orderDirection', 'categories'));
