@@ -49,6 +49,18 @@
                    class="p-2 rounded border border-gray-300 bg-white shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                    placeholder="Buscar por título">
         </div>
+
+        <!-- Selector de categorías -->
+        <div class="relative inline-block">
+            <label for="category_id" class="block text-sm font-semibold text-gray-700">Categoría:</label>
+            <select name="category_id" id="category_id" class="p-2 rounded border border-gray-300 bg-white shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                <option value="">Todas las categorías</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
         <!-- Selector de orden -->
         <div class="flex space-x-4 items-center">
             <!-- Selector de orden -->

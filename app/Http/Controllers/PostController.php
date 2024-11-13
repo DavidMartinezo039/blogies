@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Category;
 use App\Models\Post;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -19,10 +20,15 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $query = Post::query();
+        $categories = Category::all();
 
         // Filtra por título si se introduce una búsqueda
         if ($request->filled('search_title')) {
             $query->where('title', 'like', '%' . $request->search_title . '%');
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
         }
 
         // Ordena según los parámetros seleccionados
@@ -32,7 +38,7 @@ class PostController extends Controller
 
         $posts = $query->paginate(9);
 
-        return view('posts.index', compact('posts', 'orderBy', 'orderDirection'));
+        return view('posts.index', compact('posts', 'orderBy', 'orderDirection', 'categories'));
     }
 
     public function show(Post $post)
@@ -82,12 +88,28 @@ class PostController extends Controller
         $orderBy = $request->input('order_by', 'published_at');
         $orderDirection = $request->input('order_direction', 'desc');
 
-        // Cambia 'get()' por 'paginate()' para habilitar la paginación
-        $posts = Post::where('user_id', $userId)
-            ->orderBy($orderBy, $orderDirection)
-            ->paginate(9);
+        $query = Post::where('user_id', $userId);
 
-        return view('posts.user', compact('posts', 'orderBy', 'orderDirection'));
+        // Filtra por título si se introduce una búsqueda
+        if ($request->filled('search_title')) {
+            $query->where('title', 'like', '%' . $request->search_title . '%');
+        }
+
+        // Filtra por categoría si se selecciona una categoría
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Ordena según los parámetros seleccionados
+        $query->orderBy($orderBy, $orderDirection);
+
+        // Realiza la paginación
+        $posts = $query->paginate(9);
+
+        // Obtener todas las categorías para el formulario
+        $categories = Category::all();
+
+        return view('posts.user', compact('posts', 'orderBy', 'orderDirection', 'categories'));
     }
 
 }
