@@ -132,9 +132,11 @@
         <div class="prose prose-slate mx-auto mt-6 dark:prose-invert lg:prose-xl">
             <p>
                 <strong>Categoria: </strong>
-                <a href="{{ route('categories.show', $post->category) }}" class="text-sky-600 hover:underline">
-                    {{ $post->category->name }}
-                </a>
+                    @if($post->category)
+                        {{ $post->category->name }}
+                    @else
+                        {{ __('No category assigned') }}
+                    @endif
             </p>
         </div>
         <div
