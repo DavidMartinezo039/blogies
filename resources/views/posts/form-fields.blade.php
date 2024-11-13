@@ -22,3 +22,16 @@
            value="{{ old('published_at', $post->published_at) }}">
     <x-input-error :messages="$errors->get('published_at')" class="mt-2" />
 </div>
+<div>
+    <x-input-label for="category_id" :value="__('Category')" />
+    <select id="category_id" name="category_id" class="block w-full mt-1">
+        <option value="" disabled selected>{{ __('Select a category') }}</option>
+        @foreach($categories as $category)
+            <option value="{{ $category->id }}"
+                {{ old('category_id', $post->category_id) == $category->id ? 'selected' : '' }}>
+                {{ $category->name }}
+            </option>
+        @endforeach
+    </select>
+    <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
+</div>

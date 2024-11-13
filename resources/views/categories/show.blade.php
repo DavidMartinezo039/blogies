@@ -1,4 +1,4 @@
-<x-blog-layout :meta-title="$post->title" :meta-description="$post->body">
+<x-blog-layout :meta-title="$category->name" :meta-description="$category->body">
     <article class="mx-auto flex max-w-4xl flex-col">
         {{--<div class="h-52 md:h-72 lg:h-96">
             <img
@@ -8,14 +8,14 @@
                 especificación JSON:API"
             />
         </div>--}}
-        @if($post->user_id == auth()->id())
+        @if($category->user_id == auth()->id())
             @auth
                 <div
                     class="flex items-center justify-center space-x-10"
                 >
                     <a
                         class="rounded-full bg-sky-600 p-4 text-sky-100 shadow-lg hover:bg-sky-700 active:bg-sky-800"
-                        href="{{ route('posts.edit', $post) }}"
+                        href="{{ route('categories.edit', $category) }}"
                     >
                         <svg
                             class="h-6 w-6"
@@ -34,7 +34,7 @@
                             ></path>
                         </svg>
                     </a>
-                    <form action="{{ route('posts.destroy', $post) }}" method="POST">
+                    <form action="{{ route('categories.destroy', $category) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button
@@ -72,7 +72,7 @@
             <h2
                 class="text-2xl font-semibold leading-tight text-slate-800 dark:text-slate-200 md:text-4xl"
             >
-                {{ $post->title }}
+                {{ $category->name }}
             </h2>
         </div>
         {{--<div class="flex space-x-2 pt-4 md:mx-auto">
@@ -98,7 +98,7 @@
             class="prose prose-slate mx-auto mt-6 dark:prose-invert lg:prose-xl"
         >
             <p>
-                {{ $post->body }}
+                {{ $category->body }}
             </p>
             {{--<ul>
                 <li>List item 1</li>
@@ -129,20 +129,18 @@
                 Praesentium, provident accusantium.
             </p>--}}
         </div>
-        <div class="prose prose-slate mx-auto mt-6 dark:prose-invert lg:prose-xl">
-            <p>
-                <strong>Categoria: </strong>
-                <a href="{{ route('categories.show', $post->category) }}" class="text-sky-600 hover:underline">
-                    {{ $post->category->name }}
-                </a>
-            </p>
-        </div>
-        <div
-            class="prose prose-slate mx-auto mt-6 dark:prose-invert lg:prose-xl"
-        >
-            <p>
-                {{ $post->published_at }}
-            </p>
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold text-slate-800">Posts relacionados</h3>
+            <ul class="space-y-4 mt-4">
+                @foreach($category->posts as $post)
+                    <li class="border-b border-gray-200 pb-4">
+                        <a href="{{ route('posts.show', $post) }}" class="text-xl font-semibold text-blue-600 hover:underline">
+                            {{ $post->title }}
+                        </a>
+                        <p class="text-sm text-gray-500">{{ Str::limit($post->body, 150) }}</p>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </article>
 </x-blog-layout>

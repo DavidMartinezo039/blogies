@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 class PostController extends Controller
 {
     public function _construct()
@@ -27,9 +28,18 @@ class PostController extends Controller
             $query->where('title', 'like', '%' . $request->search_title . '%');
         }
 
+        /*
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
+        */
+
+        if ($request->filled('search_category')) {
+            $query->whereHas('category', function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search_category . '%');
+            });
+        }
+
 
         // Ordena según los parámetros seleccionados
         $orderBy = $request->get('order_by', 'published_at');
@@ -48,7 +58,9 @@ class PostController extends Controller
 
     public function create()
     {
-        return view('posts.create', ['post' => new Post()]);
+        $categories = Category::all(); // Obtener todas las categorías
+
+        return view('posts.create', ['post' => new Post()], compact('categories'));
     }
 
     public function store(StorePostRequest $request)
@@ -62,10 +74,12 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
-        return view('posts.edit', compact('post'));
+        $categories = Category::all(); // Obtener todas las categorías
+
+        return view('posts.edit', compact('post', 'categories'));
     }
 
-    public function  update(UpdatePostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
         $post->update(array_merge($request->validated(), [
             'user_id' => auth()->id(),

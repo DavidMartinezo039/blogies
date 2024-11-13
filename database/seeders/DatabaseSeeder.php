@@ -55,7 +55,15 @@ class DatabaseSeeder extends Seeder
         });
 
         // Crear 10 categorías con "David" como admin
-        Category::factory(10)->create();
+        $categories = Category::factory(10)->create();
+
+        $posts = Post::where('user_id', '!=', $david->id)->get();
+
+        // Asignar una categoría aleatoria a cada post
+        $posts->each(function ($post) use ($categories) {
+            // Asignar una categoría aleatoria
+            $post->category()->associate($categories->random())->save();
+        });
 
         /*foreach ($users as $user) {
             $user->posts()->saveMany(

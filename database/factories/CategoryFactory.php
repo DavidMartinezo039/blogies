@@ -21,6 +21,7 @@ class CategoryFactory extends Factory
 
         return [
             'name' => $this->faker->unique()->word(),
+            'body' => $this->faker->paragraph(),
             'user_id' => $user->id,
         ];
     }
