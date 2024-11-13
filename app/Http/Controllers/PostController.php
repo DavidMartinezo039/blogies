@@ -16,13 +16,23 @@ class PostController extends Controller
         $this->middleware('auth')->except('index', 'show');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $posts = DB::table(table:'posts')->get();
+        $query = Post::query();
 
-        /*$posts = Post::where('published_at', '<=', Carbon::now())->get();*/
-        $posts = Post::where('published_at', '<=', now())->paginate(9);
-        return view('posts.index', compact('posts'));
+        // Filtra por título si se introduce una búsqueda
+        if ($request->filled('search_title')) {
+            $query->where('title', 'like', '%' . $request->search_title . '%');
+        }
+
+        // Ordena según los parámetros seleccionados
+        $orderBy = $request->get('order_by', 'published_at');
+        $orderDirection = $request->get('order_direction', 'asc');
+        $query->orderBy($orderBy, $orderDirection);
+
+        $posts = $query->paginate(9);
+
+        return view('posts.index', compact('posts', 'orderBy', 'orderDirection'));
     }
 
     public function show(Post $post)
@@ -51,7 +61,7 @@ class PostController extends Controller
 
     public function  update(UpdatePostRequest $request, Post $post)
     {
-        Post::updated(array_merge($request->validated(), [
+        $post->update(array_merge($request->validated(), [
             'user_id' => auth()->id(),
         ]));
         return to_route('posts.show', $post)
@@ -66,14 +76,18 @@ class PostController extends Controller
             ->with('status', 'Post deleted successfully');
     }
 
-    public function user()
+    public function user(Request $request)
     {
         $userId = Auth::id();
+        $orderBy = $request->input('order_by', 'published_at');
+        $orderDirection = $request->input('order_direction', 'desc');
 
         // Cambia 'get()' por 'paginate()' para habilitar la paginación
-        $posts = Post::where('user_id', $userId)->paginate(9);
+        $posts = Post::where('user_id', $userId)
+            ->orderBy($orderBy, $orderDirection)
+            ->paginate(9);
 
-        return view('posts.user', compact('posts'));
+        return view('posts.user', compact('posts', 'orderBy', 'orderDirection'));
     }
 
 }
