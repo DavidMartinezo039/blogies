@@ -12,17 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->text('body')->change();
+            $table->foreignId('user_id')->constrained();
         });
     }
-
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->dropColumn('body');
+            $table->dropConstrainedForeignId('user_id');
         });
     }
 };

@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->text('body')->change();
+            // Agregar la columna `published_at` solo si no existe
+            if (!Schema::hasColumn('posts', 'published_at')) {
+                $table->date('published_at')->nullable();
+            }
         });
     }
 
@@ -22,7 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->dropColumn('body');
+            // Eliminar la columna `published_at` solo si existe
+            if (Schema::hasColumn('posts', 'published_at')) {
+                $table->dropColumn('published_at');
+            }
         });
     }
 };

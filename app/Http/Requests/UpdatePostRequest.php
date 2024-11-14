@@ -24,6 +24,8 @@ class UpdatePostRequest extends FormRequest
         return [
             'title' => 'required|min:5',
             'body' => 'required',
+            'published_at' => 'required',
+            'category_id' => 'required|exists:categories,id',
         ];
     }
 }

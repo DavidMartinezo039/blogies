@@ -235,15 +235,63 @@
                     </button>
                 </div>
             </div>
-            <button
-                class="ml-4 rounded-full text-slate-500 transition-colors hover:text-sky-500 focus:ring-2 focus:ring-slate-200 focus:ring-offset-1"
-            >
-                <img
-                    class="h-6 w-6 rounded-full"
-                    src="https://ui-avatars.com/api?name=Jorge+Garcia"
-                    alt="Jorge García"
-                />
-            </button>
+
+            <x-dropdown>
+                <x-slot name="trigger">
+                    <button
+                        class="ml-4 rounded-full text-slate-500 transition-colors hover:text-sky-500 focus:ring-2 focus:ring-slate-200 focus:ring-offset-1"
+                    >
+                        @guest
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.485 0 4.5-2.015 4.5-4.5S14.485 3 12 3 7.5 5.015 7.5 7.5 9.515 12 12 12zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                            </svg>
+                        @endguest
+                        @auth()
+                                <img
+                                    class="h-6 w-6 rounded-full"
+                                    src="https://ui-avatars.com/api?name={{ urlencode(Auth::user()->name . ' ' . Auth::user()->last_name) }}"
+                                    alt="{{ Auth::user()->name }} {{ Auth::user()->last_name }}"
+                                />
+                        @endauth
+                        <div class="ms-1">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </button>
+                </x-slot>
+
+                <x-slot name="content">
+                    @guest
+                        <x-dropdown-link :href="route('login')">
+                            {{ __('Login') }}
+                        </x-dropdown-link>
+
+                        <!-- Authentication -->
+                        <x-dropdown-link :href="route('register')">
+                            {{ __('Register') }}
+                        </x-dropdown-link>
+                    @endguest
+                    @auth
+                    <x-dropdown-link :href="route('profile.edit')">
+                        {{ __('Profile') }}
+                    </x-dropdown-link>
+
+                    <!-- Authentication -->
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+
+                        <x-dropdown-link :href="route('logout')"
+                                         onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                            {{ __('Log Out') }}
+                        </x-dropdown-link>
+                    </form>
+                    @endauth
+                </x-slot>
+            </x-dropdown>
+
+
         </div>
     </div>
     <div
